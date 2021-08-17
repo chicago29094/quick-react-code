@@ -1,0 +1,36 @@
+{
+    "workbench.colorCustomizations": {
+        "activityBar.background": "#0d3523",
+        "titleBar.activeBackground": "#030c08",
+        "titleBar.activeForeground": "#e7e7e7",
+        "activityBar.activeBackground": "#0d3523",
+        "activityBar.activeBorder": "#8732cd",
+        "activityBar.foreground": "#e7e7e7",
+        "activityBar.inactiveForeground": "#e7e7e799",
+        "activityBarBadge.background": "#8732cd",
+        "activityBarBadge.foreground": "#e7e7e7",
+        "statusBar.background": "#030c08",
+        "statusBar.foreground": "#e7e7e7",
+        "statusBarItem.hoverBackground": "#0d3523",
+        "titleBar.inactiveBackground": "#030c0899",
+        "titleBar.inactiveForeground": "#e7e7e799"
+    },
+    "cSpell.words": [
+        "array",
+        "checkboxgroup",
+        "closetag",
+        "element",
+        "forminput",
+        "forminputs",
+        "loggedin",
+        "opentag",
+        "quickreact",
+        "radiogroup",
+        "reactbootstrap",
+        "selfclosingtag",
+        "somepath",
+        "textareafield",
+        "textfield"
+    ],
+    "peacock.color": "#030c08"
+}
