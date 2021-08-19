@@ -1261,7 +1261,7 @@ if ( ((hooks!==undefined) && (hooks.indexOf('useReducer')!=-1)) ) {
         specifiedNameArray=[];
         matchIndex=0;
         while (quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex)!==0) {
-            for (let i=quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex); i>0; i--) {
+            for (let i=quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex)-1; i>0; i--) {
                 output = output + `    </${specifiedNameArray[i].mixed}.Provider>\n`;
             }
             matchIndex++;
@@ -1272,7 +1272,7 @@ if ( ((hooks!==undefined) && (hooks.indexOf('useContext')!=-1)) ) {
         specifiedNameArray=[];
         matchIndex=0;
         while (quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex)!==0) {
-            for (let i=quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex); i>0; i--) {
+            for (let i=quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex)-1; i>0; i--) {
                 output = output + `    </${specifiedNameArray[i].mixed}.Provider>\n`;
             }
             matchIndex++;
@@ -2052,7 +2052,7 @@ export const ${quickReactElement.name} = (props) => {
             specifiedNameArray=[];
             matchIndex=0;
             while (quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex)!==0) {
-                for (let i=quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex); i>0; i--) {
+                for (let i=quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex)-1; i>0; i--) {
                     output = output + `    </${specifiedNameArray[i].mixed}.Provider>\n`;
                 }
                 matchIndex++;
@@ -2065,7 +2065,7 @@ export const ${quickReactElement.name} = (props) => {
             specifiedNameArray=[];
             matchIndex=0;
             while (quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex)!==0) { 
-                for (let i=quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex); i>0; i--) {
+                for (let i=quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex)-1; i>0; i--) {
                     output = output + `    </${specifiedNameArray[i].mixed}.Provider>\n`;
                 }
                 matchIndex++;

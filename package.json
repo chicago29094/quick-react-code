@@ -5,7 +5,7 @@
   "description": "Start building React apps faster with Quick-React and VS Code.",
   "icon": "images/quickReactIcon.png",
   "repository": "https://github.com/chicago29094/quick-react-code",
-  "version": "0.5.7",
+  "version": "0.5.8",
   "license": "SEE LICENSE IN LICENSE.txt",
   "engines": {
     "vscode": "^1.59.0"

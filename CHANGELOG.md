@@ -3,6 +3,10 @@
 ## Quick-React-Code - A Quick-React extension for VS Code
 All notable changes to this project will be documented in this file.
 
+## [0.5.8] - 2021-08-19
+### Bug Fixes
+- Correct newly introduced file generation bug
+
 ## [0.5.7] - 2021-08-19
 ### Bug Fixes
 - Corrected missing comma in index_qr.js file
