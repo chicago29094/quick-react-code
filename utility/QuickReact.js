@@ -461,7 +461,7 @@ class QuickReact {
 
 
         // for (let i=0; i<quickreactElementArray.length; i++) {
-        //     console.log(`${quickreactElementArray[i].name} ${quickreactElementArray[i].type} ${quickreactElementArray[i].subtype} `);
+        // console.log(`${quickreactElementArray[i].name} ${quickreactElementArray[i].type} ${quickreactElementArray[i].subtype} `);
         // }
 
         // Every tag that isn't self closing must include a closing tag somewhere in the markup
@@ -488,7 +488,7 @@ class QuickReact {
         // Next we will fill in our n-ary tree data structure 
         for (let i=0; i<quickreactElementArray.length; i++) {
 
-            //console.log(`${i} ${quickreactElementArray[i].name} ${quickreactElementArray[i].type} ${quickreactElementArray[i].subtype}`);
+            // console.log(`${i} ${quickreactElementArray[i].name} ${quickreactElementArray[i].type} ${quickreactElementArray[i].subtype}`);
 
             if ( (quickreactElementArray[i].type==="component") && (quickreactElementArray[i].subtype==="opentag") ) {
                 parentQuickReactElement=quickReactElementStack.pop();
@@ -681,7 +681,7 @@ class QuickReact {
                 existsFlag=true;
             }
         } catch (error) {
-            //console.log(error);
+            // console.log(error);
             // Rethrow the error back up the call stack
             throw(error); 
         }
@@ -707,7 +707,7 @@ class QuickReact {
 
                     try {
                         const data = fs.writeFileSync(indexFilepath, document);
-                        //file written successfully
+                        // file written successfully
                     } catch (error) {
                         console.error(error)
                     }
@@ -720,7 +720,7 @@ class QuickReact {
 
                     try {
                         const data = fs.writeFileSync(appFilepath, document);
-                        //file written successfully
+                        // file written successfully
                     } catch (error) {
                         console.error(error)
                     }
@@ -745,7 +745,7 @@ class QuickReact {
 
                     try {
                         const data = fs.writeFileSync(componentFilepath, document);
-                        //file written successfully
+                        // file written successfully
                     } catch (error) {
                         // console.error(error);
                         // Rethrow the error back up the call stack
@@ -842,7 +842,7 @@ output = output +
 `ReactDOM.render(
     <React.StrictMode>
         <App />
-    </React.StrictMode>
+    </React.StrictMode>,
 document.getElementById('root')
 );
 
@@ -1189,9 +1189,9 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
         output = output + `import { ${hookTokenList} } from 'react';\n`;
 
         if (hooks.indexOf('useContext')!=-1) {
-            output = output + `//If you are using context exported from another parent component\n`;
-            output = output + `//import { SampleContext } from '../../App';\n`;
-            output = output + `//import { SampleDispatchContext } from '../../App';\n`;
+            output = output + `// If you are using context exported from another parent component\n`;
+            output = output + `// import { SampleContext } from '../../App';\n`;
+            output = output + `// import { SampleDispatchContext } from '../../App';\n`;
         }
     }
     
@@ -1266,12 +1266,12 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
     output = output + `
     export const ${quickReactElement.name} = (props) => {
     
-    `;
+    \n`;
     
     if ( (hooks!==undefined) && (hooks.indexOf('useContext')!=-1) ) {
-        output = output + `//If you are using context exported from another parent component\n`;
-        output = output + `//const session = useContext(SampleContext);\n`;
-        output = output + `//const dispatch = useContext(SampleDispatchContext);\n`;
+        output = output + `// If you are using context exported from another parent component\n`;
+        output = output + `// const session = useContext(SampleContext);\n`;
+        output = output + `// const dispatch = useContext(SampleDispatchContext);\n`;
         output = output + `\n`;
     }
 
@@ -1386,7 +1386,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
           const _handleRegistration = async (event) => {
 
               event.preventDefault();          
-              const API_URI='http://localhost:4000/register';
+              const API_URI='http:// localhost:4000/register';
           
               try {
                   const response = await fetch(API_URI, {
@@ -1810,7 +1810,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
     
         }
 
-        ///////////////////////////////////////////////////////////
+        // // // // // // // // // // // // // // // // // // // // // // // // // // // // // /
 
         if (quickReactElement.hasAttribute('forminputs')) {
         output = output + 
