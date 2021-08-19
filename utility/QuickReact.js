@@ -4,8 +4,6 @@ const vscode = require('vscode');
 const {NaryTree} = require('./NaryTree');
 const fs = require('fs');
 const path = require('path');
-var AdmZip = require('adm-zip');
-
 
 /**
  * @classdesc Quick-React elements are an object type where each element has an assigned type, name, and a 
