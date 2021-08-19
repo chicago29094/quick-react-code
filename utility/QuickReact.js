@@ -686,79 +686,106 @@ class QuickReact {
             throw(error); 
         }
 
-        // Next let's see if we need to confirm file overwriting
-        if (existsFlag===true) {
-            const qrcConfiguration = vscode.workspace.getConfiguration('quick-react-code');
-            console.log(qrcConfiguration);
-        }
+        // If confirmed to proceed, we will iterate through the entire n-ary tree, representing our Quick-React project and create folders, 
+        // files, and settings component-by-component.  The files will be generated sequentially in level-order order.
+        const _handleFileGeneration = () => {
 
+            const treeIterator = tree.levelOrderIterator(tree.root);
 
-        // Next, we will iterate through the entire n-ary tree, representing our Quick-React project and create folders, files, and settings component-by-component
+            for (let node of treeIterator) {
 
-        const treeIterator = tree.levelOrderIterator(tree.root);
+                const quickReactElement = node.value;
+                let document = "";
 
-        for (let node of treeIterator) {
+                // Process the config node as index.js
+                if ( quickReactElement.name==='Config') {
+                    // Use the config node as an opportunity to create an index_qr.js file
+                    document = "";
+                    document = document + output_index(useBootstrap, this, tree, quickReactElement, node);     
+                    
+                    let indexFilepath = path.join(projectDirectory, 'index_qr.js');
 
-            const quickReactElement = node.value;
-            let document = "";
-
-            // Process the config node as index.js
-            if ( quickReactElement.name==='Config') {
-                // Use the config node as an opportunity to create an index_qr.js file
-                document = "";
-                document = document + output_index(useBootstrap, this, tree, quickReactElement, node);     
-                
-                let indexFilepath = path.join(projectDirectory, 'index_qr.js');
-
-                try {
-                    const data = fs.writeFileSync(indexFilepath, document);
-                    //file written successfully
-                  } catch (error) {
-                    console.error(error)
-                  }
-            }
-            else if ( quickReactElement.name==='App') {
-                document = "";
-                document = document + output_app(useBootstrap, this, tree, quickReactElement, node);                 
-
-                let appFilepath = path.join(projectDirectory, 'App_qr.js')
-
-                try {
-                    const data = fs.writeFileSync(appFilepath, document);
-                    //file written successfully
-                  } catch (error) {
-                    console.error(error)
-                  }
-            }
-            else if ( quickReactElement.type==='component') {
-                document = "";
-                document = document + output_component(useBootstrap, this, tree, quickReactElement, node);      
-
-                let componentDirectory = path.join(projectDirectory, 'components', `${quickReactElement.name}`);
-                
-                try {
-                    if (!fs.existsSync(componentDirectory)) {
-                        fs.mkdirSync(componentDirectory);
-                    }        
-                } catch (error) {
-                    // console.log(error);
-                    // Rethrow the error back up the call stack
-                    throw(error);
+                    try {
+                        const data = fs.writeFileSync(indexFilepath, document);
+                        //file written successfully
+                    } catch (error) {
+                        console.error(error)
+                    }
                 }
-        
-                let componentFilepath = path.join(projectDirectory, 'components', `${quickReactElement.name}`, 'index.js');
+                else if ( quickReactElement.name==='App') {
+                    document = "";
+                    document = document + output_app(useBootstrap, this, tree, quickReactElement, node);                 
 
-                try {
-                    const data = fs.writeFileSync(componentFilepath, document);
-                    //file written successfully
-                  } catch (error) {
-                    // console.error(error);
-                    // Rethrow the error back up the call stack
-                    throw(error);                    
-                  }                
+                    let appFilepath = path.join(projectDirectory, 'App_qr.js')
 
+                    try {
+                        const data = fs.writeFileSync(appFilepath, document);
+                        //file written successfully
+                    } catch (error) {
+                        console.error(error)
+                    }
+                }
+                else if ( quickReactElement.type==='component') {
+                    document = "";
+                    document = document + output_component(useBootstrap, this, tree, quickReactElement, node);      
+
+                    let componentDirectory = path.join(projectDirectory, 'components', `${quickReactElement.name}`);
+                    
+                    try {
+                        if (!fs.existsSync(componentDirectory)) {
+                            fs.mkdirSync(componentDirectory);
+                        }        
+                    } catch (error) {
+                        // console.log(error);
+                        // Rethrow the error back up the call stack
+                        throw(error);
+                    }
+            
+                    let componentFilepath = path.join(projectDirectory, 'components', `${quickReactElement.name}`, 'index.js');
+
+                    try {
+                        const data = fs.writeFileSync(componentFilepath, document);
+                        //file written successfully
+                    } catch (error) {
+                        // console.error(error);
+                        // Rethrow the error back up the call stack
+                        throw(error);                    
+                    }                
+
+                }
             }
+            vscode.window.showInformationMessage('Your Quick-React project directories and files have been successfully created or updated.');
         }
+
+        // Before proceeding, let's see if we need to confirm file overwriting based on user preference settings
+        if (existsFlag===true) {
+            let qrcConfiguration = {};
+            qrcConfiguration = vscode.workspace.getConfiguration().get('quickReact.files.confirmOverwrite');
+        
+            // Ask user to confirm overwrites if necessary 
+            if ( (qrcConfiguration!==undefined) && (qrcConfiguration===true) ) {
+                vscode.window.showInformationMessage('Proceeding will overwrite any matching existing Quick-React React component files.  Proceed?', 'Proceed', 'Cancel', 'Always Proceed').then( (confirmation) =>  {
+                    if (confirmation==='Proceed') {
+                        _handleFileGeneration();
+                        return;
+                    }
+                    else if (confirmation==='Cancel') {
+                        return;
+                    }
+                    else if (confirmation==='Always Proceed') {
+                        vscode.workspace.getConfiguration().update('quickReact.files.confirmOverwrite', false, vscode.ConfigurationTarget.Global).then( () => {
+                            _handleFileGeneration();
+                            return;
+                        });
+                    }
+                });
+            }
+            else {
+                _handleFileGeneration();
+                return;
+            }
+        }    
+			
     }
 
 }

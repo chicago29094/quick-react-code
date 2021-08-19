@@ -1,65 +1,56 @@
-# quick-react-code README
+# quick-react-code
 
-This is the README for your extension "quick-react-code". After writing up a brief description, we recommend including the following sections.
+Quick-React is VS Code extension developed to make the development of hook-based React projects faster, by eliminating many of the manual setup steps.  Although scripts such as **create-react-app**, initialize a great deal of the scaffolding for a typical SPA Website, project setup could benefit from additional configuration assistance, as long as the process is simple, intuitive, and fast.
 
 ## Features
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
+Quick-React addresses the need for faster development by utilizing a simple JSX-style markup format, in an easy to understand outline format, that is parsed by the Quick-React VS Code extension.  The parsed data is then used to generate directories and files directly into your project.  Attributes specified in markup components are used to enable or disable React features to be incorporated into the target project.
 
-For example if there is an image subfolder under your extension project workspace:
+![Quick-React](https://quick-react-tool.netlify.app/images/quick_react_project.png)
 
-\!\[feature X\]\(images/feature-x.png\)
+### Documentation
+Full documentation regarding the n-ary tree JavaScript library and Quick-React markup is available on the Quick-React Website:  
+https://quick-react-tool.netlify.app/documentation/
 
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+
+**Link to GitHub Repository site Quick-React Back-end API:**  
+https://github.com/chicago29094/quick-react
+
+**Link to GitHub Repository site Quick-React Front-End:**  
+https://github.com/chicago29094/quick-react-frontend
+
+**Link to GitHub Repository site Quick-React VS Code Extension:**  
+https://github.com/chicago29094/quick-react-code
+
+**Link to Deployed public Website:**  
+https://quick-react-tool.netlify.app/
+
 
 ## Requirements
 
-If you have any requirements or dependencies, add a section describing those and how to install and configure them.
+Quick-React does not have any special additional dependencies.
 
 ## Extension Settings
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+This extension contributes the following user settings:
 
-For example:
+* `quickReact.files.confirmOverwrite`: enable/disable confirmation prompt to overwrite existing files
 
-This extension contributes the following settings:
+## Known Issues / Future Updates
 
-* `myExtension.enable`: enable/disable this extension
-* `myExtension.thing`: set to `blah` to do something
-
-## Known Issues
-
-Calling out known issues can help limit users opening duplicate issues against your extension.
+- We are actively testing more edge cases and more complex markup.
+- In-editor syntax highlighting, checking, and assistance within VS Code would be helpful when coding Quick-React project markup.
+- A template based approach to component generation would add flexibility for users instead of fixed boilerplate content.
+- More flexibility can be developed for sequenced markup attributes.
+- Direct injection of components into files such as index.js and App.js would be a powerful addition.
+- Direct in-place replacement of some of the other create-react-app generic boilerplate would add flexibility to the Quick-React system.
 
 ## Release Notes
 
-Users appreciate release notes as you update your extension.
+This is the initial release of the Quick-React VS Code extension.  Feedback and comments are welcome.
 
-### 1.0.0
+### 0.5.0
 
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
+Initial release of the Quick-React VS Code extension.
 
 -----------------------------------------------------------------------------------------------------------
-
-## Working with Markdown
-
-**Note:** You can author your README using Visual Studio Code.  Here are some useful editor keyboard shortcuts:
-
-* Split the editor (`Cmd+\` on macOS or `Ctrl+\` on Windows and Linux)
-* Toggle preview (`Shift+CMD+V` on macOS or `Shift+Ctrl+V` on Windows and Linux)
-* Press `Ctrl+Space` (Windows, Linux) or `Cmd+Space` (macOS) to see a list of Markdown snippets
-
-### For more information
-
-* [Visual Studio Code's Markdown Support](http://code.visualstudio.com/docs/languages/markdown)
-* [Markdown Syntax Reference](https://help.github.com/articles/markdown-basics/)
-
-**Enjoy!**

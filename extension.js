@@ -31,15 +31,7 @@ function activate(context) {
 		if (editor) {
 			const document = editor.document;
 			const quickReactMarkupCode = document.getText();
-			const selection = editor.selection;
-
-			const results=vscode.window.showInformationMessage('Your Quick-React project directories and files have been saved.', 'Accept', 'Decline');
-
-			console.log(results);
-
-			vscode.window.showInformationMessage('Do What?', 'Accept1', 'Decline1').then( (results) => console.log('res', results) );
-
-
+			// const selection = editor.selection;
 			// vscode.window.showErrorMessage('Something has gone terribly terribly wrong.');
 			// vscode.window.showWarningMessage('Something has gone wrong, but it will be ok.');
 			// vscode.window.showInformationMessage('Relax, this is just some information for you.');
@@ -67,9 +59,6 @@ function activate(context) {
 				// console.error(error)
 				vscode.window.showErrorMessage(`Your Quick-React project files could not be saved.`);
 			}
-
-			vscode.window.showInformationMessage('Your Quick-React project directories and files have been saved.');
-
 		}
 	});
 
