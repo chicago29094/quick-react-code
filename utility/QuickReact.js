@@ -4,12 +4,23 @@ const vscode = require('vscode');
 const {NaryTree} = require('./NaryTree');
 const fs = require('fs');
 const path = require('path');
+var AdmZip = require('adm-zip');
 
-/*================================================================================================*/
-// Quick-React elements are an object type where each element has an assigned type, name, and a 
-// set of unique key/value attributes stored as a JavaScript Map data structure.
+
+/**
+ * @classdesc Quick-React elements are an object type where each element has an assigned type, name, and a 
+ * set of unique key/value attributes stored as a JavaScript Map data structure.
+ * @class
+ */
 class QuickReactElement {
 
+    /**
+     * The QuickReactElement class object constructor method
+     * @constructor
+     * @param {string} name - a name for this element
+     * @param {string} type - a type to categorize this element 
+     * @param {Object} attributes object - a shallow object containing [key, value] pairs 
+     */
     constructor(name, type, attributes) {
         if ( (name===undefined) || (name===null) ) {
             throw TypeError('Quick-React Elements must be instantiated with a name and type.')
@@ -33,38 +44,77 @@ class QuickReactElement {
         }
     }
 
+    /**
+     * Get this element's designated type.
+     * @method
+     * @returns {string} - this element's designated type
+     */
     get type() {
         return this._type;
     }
 
+    /**
+     * Set this element's type value
+     * @method
+     * @param {string} typeValue string - the element's type value 
+     */
     set type(typeValue) {
         this._type=typeValue;
     }
 
+    /**
+     * Get this element's subtype value
+     * @method
+     * @returns {string} this element's designated subtype
+     */
     get subtype() {
         return this._subtype;
     }
 
+    /**
+     * Set this element's subtype value
+     * @method
+     * @param {string} subtypeValue string - the element's subtype value 
+     */
     set subtype(subtypeValue) {
         this._subtype=subtypeValue;
     }
 
-
+    /**
+     * Get the element's name.
+     * @method
+     * @returns {string} this element's name
+     */
     get name() {
         return this._name;
     }
 
+    /**
+     * Set this element's name.
+     * @method
+     * @param {string} nameValue string - the element's name 
+     */    
     set name(nameValue) {
         this._name=nameValue;
     }
 
-    // Check to see if the Quick-React element has a specific attribute set
+    /**
+     * Check to see if the Quick-React element has a specific attribute set
+     * @method
+     * @param {string} key string - check to see whether this element has an attribute with the specified property key 
+     * @returns {boolean} does this Quick-React element have this attribute?
+     */
     hasAttribute(key) {
         return this._attributes.has(key);
     }
 
-    // Safely Check to see if the Quick-React element has a specific attribute key set to a specific value
-    // This method does not return undefined for undefined properties, it always returns a boolean true or false value
+    /**
+     * Safely Check to see if the Quick-React element has a specific attribute key set to a specific value
+     * This method does not return undefined for undefined properties, it always returns a boolean true or false value
+     * @method
+     * @param {Object} obj object - check to see whether this element has an attribute with the specified property key and value, submitted as a shallow object
+     * @returns {boolean} does this Quick-React element have this attribute key and value?
+    */
     safeHasAttribute(obj) {
         const [key, value] = Object.entries(obj)[0];
 
@@ -81,54 +131,96 @@ class QuickReactElement {
         }
     }
 
-
+    /**
+     * Returns the number of attributes this element has
+     * @method
+     * @returns {number} the number of attributes this element has
+     */
     getAttributeSize() {
         return  this._attributes.size;
     }
 
-    // Get an attribute's value
+    /**
+     * Get an attribute's value specified by the key parameter
+     * @method
+     * @param {string} key string - the string representing the attribute property to search for
+     * @returns {string} value string - the value associated with the specified key
+     */
     getAttribute(key) {
         return this._attributes.get(key);
     }
 
-    // Delete an attribute
+    /**
+     * Delete an attribute specified by the key parameter
+     * @method
+     * @param {string} key string - the string representing the attribute property to delete
+     * @returns {boolean} true or false return value depending on whether the delete request was successfully processed
+    */
     deleteAttribute(key) {
         return this._attributes.delete(key);
     }
 
-    // Set a key value pair
+    /**
+     * Set a key value pair as an attribute of this element
+     * @method
+     * @param {Object} obj {key:value} object to be set as a new attribute of this element or to replace an existing attribute with the same key
+     * @returns {Object} map object - attribute map object is returned 
+     */
     setAttribute( obj ) {
         const [key,value] = Object.entries(obj)[0];
         return this._attributes.set(key, value);
     }
 
-    // Returns all key/value pairs as an array using the spread operator
+    /**
+     * Returns all key/value pairs as an array using the spread operator
+     * @method
+     * @returns {array[]} returns all key/value pairs as an array using the spread operator
+     */
     getAllAttributes() {
         return([...this._attributes]);
     }
 
+    /**
+     * Returns the name of this element
+     * @method
+     * @returns {string} returns the name of this element
+     */    
     toString() {
         return `${this._name} ${this._attributes}`;
     }
 
 }
 
-/*================================================================================================*/
-// The QuickReact class methods perform all the processing of parsing Quick-React markup into an 
-// n-ary tree, which can then be output as React folder and file components for quick React project
-// setup.
+/**
+ * @classdesc The QuickReact class methods perform all the processing of parsing Quick-React markup into an 
+ * n-ary tree, which can then be output as React folder and file components for quick React project setup
+ * @class
+ */
 
 class QuickReact {
 
-    // Instantiates an empty n-ary tree as a JavaScript object
+    /**
+     * Instantiates a QuickReact object and an empty n-ary tree as a JavaScript object
+     * @constructor
+     */
     constructor() {
         this._tree=new NaryTree();
     }
 
+    /**
+     * Retrieve a reference to this NaryTree
+     * @returns {Object} NaryTree object associated with this QuickReact object
+     */
     get tree() {
         return this._tree;
     }
 
+    /**
+     * The parseMarkup method takes submitted Quick-React JSX markup code and produces an n-Ary tree structure representing the components, their nested
+     * structure, and each element's attributes.
+     * @param {string} code string - Quick-Start markup code in text JSX format 
+     * @returns {Object} returns a populated NaryTree object representing the lexed and parsed output of the supplied Quick-React markup code
+     */
     parseMarkup(code) {
         if ( (code===undefined) || (code===null) || (typeof code !== 'string') ) {
             return this._tree;
@@ -165,7 +257,7 @@ class QuickReact {
 
         // First we will lex the markup and parse it into quick-react object elements
         outer: while (codeIndex<end) {
-            if (!inComponent) {
+                if (!inComponent) {
                 startIndex=code.indexOf('<', codeIndex);
                 endIndex=code.indexOf('>', codeIndex);
 
@@ -188,7 +280,7 @@ class QuickReact {
                 else if ( (code.charAt(startIndex+1)==='/') && (code.charAt(startIndex+2)==='>') ) {
                     codeIndex=codeIndex+3;
                     continue;
-                }                
+                }           
 
                 // Is this a close tag for a component opening tag/closing tag pair?
                 if (code.charAt(startIndex+1)==='/') {
@@ -516,25 +608,33 @@ class QuickReact {
         return this._tree;
     }
 
-    /*==========================================================================================*/
-
-    // This function prints a strings from the current code index to a specified length to provide the developer/user
-    // with a reference as to where their code may have a syntax error.
+    /**
+     * This function prints a strings from the current code index to a specified length to provide the developer/user
+     * with a reference as to where their code may have a syntax error.
+     * @method
+     * @param {string} code - the Quick-React markup code
+     * @param {number} index - the character position in the code where an error was found
+     * @param {number} length - the length is characters of surrounding context text to display in the response message
+     * @returns {string} message - a message regarding the error or problem found in the supplied code
+     */
     _printRef(code, index, length) {
         return `Reference: ${code.slice(index, index+length)}`
     }
 
-    /*==========================================================================================*/
-
-    // The _multiplier function that an attribute key name as an argument and determined whether a multiplier 
-    // express is used, denoted by an '*', to indicate a repeat of the item a certain number of times.
-    // Multiplier values can be a single integer digit or two integer digits long.
+    /**
+     * The _multiplier function checks the passed attribute and determines whether a multiplier 
+     * expression is used in the attribute, denoted by an '*', to request a repeat of the item a specified number of times.
+     * Multiplier values can be a single integer digit or two integer digits long.
+     * @method
+     * @param {string} attribute string - the attribute key to search for
+     * @returns {number} returns the multiplier value found in the attribute or 1 as a default
+     */
     _multiplier(attribute) {
-        if ( (attribute.length>=4) && (attribute.charAt(attribute.length-3)==='*') && (!isNaN(attribute.slice(-2)))  ) {
+        if ( (attribute.length>=4) && (attribute.charAt(attribute.length-3)==='*') && (!isNaN(parseInt(attribute.slice(-2))))  ) {
             const num=(parseInt(attribute.slice(-2)));
             return num;
         }
-        else if ( (attribute.length>=3) && (attribute.charAt(attribute.length-2)==='*') && (!isNaN(attribute.slice(-1)))  ) {
+        else if ( (attribute.length>=3) && (attribute.charAt(attribute.length-2)==='*') && (!isNaN(parseInt(attribute.slice(-1))))  ) {
             const num=(parseInt(attribute.slice(-1)));
             return num;
         }
@@ -543,8 +643,17 @@ class QuickReact {
         }
     }
 
-    // This is the same as the _multiplier function except that it looks through all of the component's attributes for
-    // the first matching attribute, compared via key name, and then checks to see if a multiplier expression is used.
+    /**
+      * This is the same as the _multiplier function except that it looks through all of the component's attributes for
+      * the first matching attribute, compared via key name, and then checks to see if a multiplier expression is used.
+      * @method
+      * @param {Object} component quickReactElement component - a Quick-React object element to search
+      * @param {string} searchAttribute - the attribute to search for in the element
+      * @param {array[]} specifiedNameArray - an array used to hold values of requested field/variable names in the markup
+      * @param {string} defaultName - a default name to use for a field/variable if specified names are used in the markup
+      * @param {number} matchIndex - add support for use of an attribute more than one time in a single component
+      * @returns {number} returns the multiplier value found or zero if the attribute wasn't found, or one if the attribute was found but no multiplier was specified
+      */
     _findMultiplier(component, searchAttribute, specifiedNameArray, defaultName, matchIndex) {
 
         const attributes = component.getAllAttributes(component);
@@ -584,7 +693,7 @@ class QuickReact {
 
             // Trim out any starting or trailing whitespace, although there shouldn't be any at this point
             for (let i=0; i<fieldNameArray.length; i++) {
-                specifiedNameArray[i]={};
+                specifiedNameArray[i]=[];
                 specifiedNameArray[i]['default']=fieldNameArray[i].trim();
                 specifiedNameArray[i]['lower']=specifiedNameArray[i]['default'].toLowerCase();
                 specifiedNameArray[i]['mixed']=specifiedNameArray[i]['lower'][0].toUpperCase()+specifiedNameArray[i]['lower'].slice(1);
@@ -595,7 +704,7 @@ class QuickReact {
         }
         
         let num=1;
-        if ( (attribute.length>=4) && (attribute.charAt(attribute.length-3)==='*') && (!isNaN(parseInt(attribute.slice(-2))))  ) {
+            if ( (attribute.length>=4) && (attribute.charAt(attribute.length-3)==='*') && (!isNaN(parseInt(attribute.slice(-2))))  ) {
             num=(parseInt(attribute.slice(-2)));
         }
         else if ( (attribute.length>=3) && (attribute.charAt(attribute.length-2)==='*') && (!isNaN(parseInt(attribute.slice(-1))))  ) {
@@ -606,7 +715,7 @@ class QuickReact {
         }
 
         for (let i=0; i<num; i++) {
-            specifiedNameArray[i]={};
+            specifiedNameArray[i]=[];
             specifiedNameArray[i]['default']=''+defaultName.trim()+(i+1);
             specifiedNameArray[i]['lower']=specifiedNameArray[i]['default'].toLowerCase();
             specifiedNameArray[i]['mixed']=specifiedNameArray[i]['lower'][0].toUpperCase()+specifiedNameArray[i]['lower'].slice(1);
@@ -618,8 +727,13 @@ class QuickReact {
 
     /*==========================================================================================*/
 
-
-    generateProjectFiles(tree) {
+    /**
+     * A function to generate React directories and files based on the n-Ary tree representation of the Quick-React markup
+     * @method
+     * @param {Object} tree NaryTree tree - The tree of parsed values representing the structure of this Quick-React project
+     * @returns {undefined} Stores the directories and files for the project and generates a zip file with all of the content archived into a single downloadable document.
+     */
+     generateProjectFiles(tree) {
 
         if ( (tree===undefined) || !(tree instanceof NaryTree) ) {
             return;
@@ -648,7 +762,7 @@ class QuickReact {
         // console.log(componentsDirectory);
         // console.log(imagesDirectory);
         // console.log(assetsDirectory);
-
+ 
         let existsFlag=false;
 
         try {
@@ -692,101 +806,101 @@ class QuickReact {
 
             const treeIterator = tree.levelOrderIterator(tree.root);
 
-            for (let node of treeIterator) {
+        for (let node of treeIterator) {
 
-                const quickReactElement = node.value;
-                let document = "";
+            const quickReactElement = node.value;
+            let document = "";
 
-                // Process the config node as index.js
-                if ( quickReactElement.name==='Config') {
-                    // Use the config node as an opportunity to create an index_qr.js file
-                    document = "";
-                    document = document + output_index(useBootstrap, this, tree, quickReactElement, node);     
-                    
-                    let indexFilepath = path.join(projectDirectory, 'index_qr.js');
+            // Process the config node as index.js
+            if ( quickReactElement.name==='Config') {
+                // Use the config node as an opportunity to create an index_qr.js file
+                document = "";
+                document = document + output_index(useBootstrap, this, tree, quickReactElement, node);     
+                
+                let indexFilepath = path.join(projectDirectory, 'index_qr.js');
 
-                    try {
-                        const data = fs.writeFileSync(indexFilepath, document);
-                        // file written successfully
-                    } catch (error) {
-                        console.error(error)
-                    }
-                }
-                else if ( quickReactElement.name==='App') {
-                    document = "";
-                    document = document + output_app(useBootstrap, this, tree, quickReactElement, node);                 
-
-                    let appFilepath = path.join(projectDirectory, 'App_qr.js')
-
-                    try {
-                        const data = fs.writeFileSync(appFilepath, document);
-                        // file written successfully
-                    } catch (error) {
-                        console.error(error)
-                    }
-                }
-                else if ( quickReactElement.type==='component') {
-                    document = "";
-                    document = document + output_component(useBootstrap, this, tree, quickReactElement, node);      
-
-                    let componentDirectory = path.join(projectDirectory, 'components', `${quickReactElement.name}`);
-                    
-                    try {
-                        if (!fs.existsSync(componentDirectory)) {
-                            fs.mkdirSync(componentDirectory);
-                        }        
-                    } catch (error) {
-                        // console.log(error);
-                        // Rethrow the error back up the call stack
-                        throw(error);
-                    }
-            
-                    let componentFilepath = path.join(projectDirectory, 'components', `${quickReactElement.name}`, 'index.js');
-
-                    try {
-                        const data = fs.writeFileSync(componentFilepath, document);
-                        // file written successfully
-                    } catch (error) {
-                        // console.error(error);
-                        // Rethrow the error back up the call stack
-                        throw(error);                    
-                    }                
-
-                }
+                try {
+                    const data = fs.writeFileSync(indexFilepath, document);
+                    // file written successfully
+                  } catch (error) {
+                    console.error(error)
+                  }
             }
-            vscode.window.showInformationMessage('Your Quick-React project directories and files have been successfully created or updated.');
-        }
+            else if ( quickReactElement.name==='App') {
+                document = "";
+                document = document + output_app(useBootstrap, this, tree, quickReactElement, node);                 
 
-        // Before proceeding, let's see if we need to confirm file overwriting based on user preference settings
-        if (existsFlag===true) {
-            let qrcConfiguration = {};
-            qrcConfiguration = vscode.workspace.getConfiguration().get('quickReact.files.confirmOverwrite');
+                let appFilepath = path.join(projectDirectory, 'App_qr.js')
+
+                try {
+                    const data = fs.writeFileSync(appFilepath, document);
+                    // file written successfully
+                  } catch (error) {
+                    console.error(error)
+                  }
+            }
+            else if ( quickReactElement.type==='component') {
+                document = "";
+                document = document + output_component(useBootstrap, this, tree, quickReactElement, node);      
+
+                let componentDirectory = path.join(projectDirectory, 'components', `${quickReactElement.name}`);
+                
+                try {
+                    if (!fs.existsSync(componentDirectory)) {
+                        fs.mkdirSync(componentDirectory);
+                    }        
+                } catch (error) {
+                    // console.log(error);
+                    // Rethrow the error back up the call stack
+                    throw(error);
+                }
         
-            // Ask user to confirm overwrites if necessary 
-            if ( (qrcConfiguration!==undefined) && (qrcConfiguration===true) ) {
-                vscode.window.showInformationMessage('Proceeding will overwrite any matching existing Quick-React React component files.  Proceed?', 'Proceed', 'Cancel', 'Always Proceed').then( (confirmation) =>  {
-                    if (confirmation==='Proceed') {
+                let componentFilepath = path.join(projectDirectory, 'components', `${quickReactElement.name}`, 'index.js');
+
+                try {
+                    const data = fs.writeFileSync(componentFilepath, document);
+                    // file written successfully
+                } catch (error) {
+                    // console.error(error);
+                    // Rethrow the error back up the call stack
+                    throw(error);                    
+                }                  
+
+            }
+        }
+        vscode.window.showInformationMessage('Your Quick-React project directories and files have been successfully created or updated.');
+    }
+
+    // Before proceeding, let's see if we need to confirm file overwriting based on user preference settings
+    if (existsFlag===true) {
+        let qrcConfiguration = {};
+        qrcConfiguration = vscode.workspace.getConfiguration().get('quickReact.files.confirmOverwrite');
+    
+        // Ask user to confirm overwrites if necessary 
+        if ( (qrcConfiguration!==undefined) && (qrcConfiguration===true) ) {
+            vscode.window.showInformationMessage('Proceeding will overwrite any matching existing Quick-React React component files.  Proceed?', 'Proceed', 'Cancel', 'Always Proceed').then( (confirmation) =>  {
+                if (confirmation==='Proceed') {
+                    _handleFileGeneration();
+                    return;
+                }
+                else if (confirmation==='Cancel') {
+                    return;
+                }
+                else if (confirmation==='Always Proceed') {
+                    vscode.workspace.getConfiguration().update('quickReact.files.confirmOverwrite', false, vscode.ConfigurationTarget.Global).then( () => {
                         _handleFileGeneration();
                         return;
-                    }
-                    else if (confirmation==='Cancel') {
-                        return;
-                    }
-                    else if (confirmation==='Always Proceed') {
-                        vscode.workspace.getConfiguration().update('quickReact.files.confirmOverwrite', false, vscode.ConfigurationTarget.Global).then( () => {
-                            _handleFileGeneration();
-                            return;
-                        });
-                    }
-                });
-            }
-            else {
-                _handleFileGeneration();
-                return;
-            }
-        }    
-			
-    }
+                    });
+                }
+            });
+        }
+        else {
+            _handleFileGeneration();
+            return;
+        }
+    }    
+        
+}
 
 }
 
@@ -795,7 +909,16 @@ class QuickReact {
 /*================================================================================================*/
 /*================================================================================================*/
 
-
+/**
+ * Output the index.js file as index_qr.js for this React project
+ * @method
+ * @param {boolean} useBootstrap boolean - boolean flag indicating whether react-bootstrap should be used
+ * @param {Object} quickReact object - the instance of the Quick-React project object
+ * @param {Object} tree NaryTree tree object - the parse tree of object and values for this project
+ * @param {Object} quickReactElement QuickReactElement object - a specific quickReactElement
+ * @param {Object} node NaryNode node object - a specific node in the project tree
+ * @returns {string} Outputs the content for the index.js file as index_qr.js for this React project
+ */
 function output_index(useBootstrap, quickReact, tree, quickReactElement, node) {
 
 let output = "";
@@ -859,7 +982,16 @@ return output;
 /*================================================================================================*/
 /*================================================================================================*/
 
-
+/**
+ * Output the App.js file as App_qr.js for this React project
+ * @method
+ * @param {boolean} useBootstrap boolean - boolean flag indicating whether react-bootstrap should be used
+ * @param {Object} quickReact object - the instance of the Quick-React project object
+ * @param {Object} tree NaryTree tree object - the parse tree of object and values for this project
+ * @param {Object} quickReactElement QuickReactElement object - a specific quickReactElement
+ * @param {Object} node NaryNode node object - a specific node in the project tree
+ * @returns {string} - Outputs the content for the App.js file as App_qr.js for this React project
+ */
 function output_app(useBootstrap, quickReact, tree, quickReactElement, node) {
 
 let specifiedNameArray=[];
@@ -877,6 +1009,7 @@ if (hooks!==undefined) {
     if (hooks.indexOf('useContext')!=-1)    { hookTokenList=hookTokenList+comma+'useContext'; comma=", "; }
     if (hooks.indexOf('useReducer')!=-1)    { hookTokenList=hookTokenList+comma+'useReducer'; comma=", "; }
 
+    if (hookTokenList!=="")
     output = output + `import { ${hookTokenList} } from 'react';\n`;
 }
 
@@ -895,6 +1028,7 @@ if ( (hooks!==undefined) || (reactSwitch!==undefined) || (reactRoute!==undefined
     if ((reactRoute!==undefined) && (reactRoute===true))     { tokenList=tokenList+comma+'Route'; comma=", "; }
     if ((reactLink!==undefined) && (reactLink===true))     { tokenList=tokenList+comma+'Link'; comma=", "; }
 
+    if (tokenList!=="")
     output = output + `import { ${tokenList} } from "react-router-dom";\n`;
 }
 
@@ -924,7 +1058,7 @@ if ( (hooks!==undefined) && (hooks.indexOf('useContext')!=-1) )  {
     matchIndex=0;
     while (quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex)!==0) {
         for (let i=0; i<quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex); i++) {
-            output = output + `export const ${specifiedNameArray[i]} = React.createContext(); \n`;
+            output = output + `export const ${specifiedNameArray[i].mixed} = React.createContext(); \n`;
         }
         output = output + `\n`;
         matchIndex++;
@@ -937,7 +1071,7 @@ if ( (hooks!==undefined) && (hooks.indexOf('useReducer')!=-1) ) {
     matchIndex=0;
     while (quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex)!==0) {
         for (let i=0; i<quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex); i++) {
-            output = output + `export const ${specifiedNameArray[i]} = React.createContext();\n`;
+            output = output + `export const ${specifiedNameArray[i].mixed} = React.createContext();\n`;
         }
         output = output + `\n`;
         matchIndex++;
@@ -968,7 +1102,7 @@ if ( (hooks!==undefined) && (hooks.indexOf('useReducer')!=-1) ) {
         output = output + `
         
         // This useReducer hook can call local functions to handle the requested actions if necessary
-        function ${specifiedNameArray[i]}(state, action) {
+        function ${specifiedNameArray[i].lower}(state, action) {
             switch (action.type) {
             case 'Case1':
                 return newState;
@@ -988,7 +1122,7 @@ if ( (hooks!==undefined) && (hooks.indexOf('useReducer')!=-1) ) {
             loggedin: false,
         }
 
-        const [sampleState${(i+1)}, dispatch${(i+1)}] = useReducer(${specifiedNameArray[i]}, initialState${(i+1)});
+        const [sampleState${(i+1)}, dispatch${(i+1)}] = useReducer(${specifiedNameArray[i].lower}, initialState${(i+1)});
 
         `;
     }
@@ -1000,15 +1134,15 @@ if ( (hooks!==undefined) && (hooks.indexOf('useReducer')!=-1) ) {
 let useForm=quickReactElement.getAttribute('form');
 if ( (hooks!==undefined) && (hooks.indexOf('useState')!=-1) && (useForm!==undefined) && (useForm===true) ) {
 
-    output = output + 
-    `    
-    // sample initialFormValues
-    const initialFormValues1 = {
-        first_name: "",
-        last_name: "",
-        email_address: "",
-    }
-    \n`;
+output = output + 
+`    
+// sample initialFormValues
+const initialFormValues1 = {
+    first_name: "",
+    last_name: "",
+    email_address: "",
+}
+\n`;
 
     specifiedNameArray=[];
     matchIndex=0;
@@ -1027,7 +1161,7 @@ else if ( (hooks!==undefined) && (hooks.indexOf('useState')!=-1)  ) {
     matchIndex=0;
     while (quickReact._findMultiplier(quickReactElement, 'useState', specifiedNameArray, 'appState', matchIndex)!==0 ) {
         for (let i=0; i<quickReact._findMultiplier(quickReactElement, 'useState', specifiedNameArray, 'appState', matchIndex); i++) {
-            output = output + ` const [${specifiedNameArray[i]}, set${specifiedNameArray[i].mixed}] = useState({});\n`;
+            output = output + ` const [${specifiedNameArray[i].lower}, set${specifiedNameArray[i].mixed}] = useState({});\n`;
             output = output + ` \n`;
         }
         matchIndex++;
@@ -1167,7 +1301,16 @@ return output;
 /*================================================================================================*/
 /*================================================================================================*/
 
-
+/**
+ * Output individual component files for the React project
+ * @method
+ * @param {boolean} useBootstrap boolean - boolean flag indicating whether react-bootstrap should be used
+ * @param {Object} quickReact object - the instance of the Quick-React project object
+ * @param {Object} tree NaryTree tree object - the parse tree of object and values for this project
+ * @param {Object} quickReactElement QuickReactElement object  - a specific quickReactElement
+ * @param {Object} node NaryNode node object - a specific node in the project tree
+ * @returns {string}  Outputs the content for the specific component file for this React project
+ */
 function output_component(useBootstrap, quickReact, tree, quickReactElement, node) {
 
     let specifiedNameArray=[];
@@ -1186,6 +1329,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
         if (hooks.indexOf('useContext')!=-1)    { hookTokenList=hookTokenList+comma+'useContext'; comma=", "; }
         if (hooks.indexOf('useReducer')!=-1)    { hookTokenList=hookTokenList+comma+'useReducer'; comma=", "; }
     
+        if (hookTokenList!=="")
         output = output + `import { ${hookTokenList} } from 'react';\n`;
 
         if (hooks.indexOf('useContext')!=-1) {
@@ -1210,6 +1354,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
         if ((reactRoute!==undefined) && (reactRoute===true))     { tokenList=tokenList+comma+'Route'; comma=", "; }
         if ((reactLink!==undefined) && (reactLink===true))     { tokenList=tokenList+comma+'Link'; comma=", "; }
     
+        if (tokenList!=="")
         output = output + `import { ${tokenList} } from "react-router-dom";\n`;
     }
     
@@ -1239,7 +1384,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
         matchIndex=0;
         while (quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex)!==0) {
             for (let i=0; i<quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex); i++) {
-                output = output + `export const ${specifiedNameArray[i]} = React.createContext(); \n`;
+                output = output + `export const ${specifiedNameArray[i].mixed} = React.createContext(); \n`;
             }
             output = output + `\n`;
             matchIndex++;
@@ -1253,7 +1398,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
         matchIndex=0;
         while (quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex)!==0) {
             for (let i=0; i<quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex); i++) {
-                output = output + `export const ${specifiedNameArray[i]} = React.createContext();\n`;
+                output = output + `export const ${specifiedNameArray[i].mixed} = React.createContext();\n`;
             }
             output = output + `\n`;
             matchIndex++;
@@ -1263,10 +1408,11 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
     let useForm=quickReactElement.getAttribute('form');
     let useMap=quickReactElement.getAttribute('map');
 
-    output = output + `
-    export const ${quickReactElement.name} = (props) => {
+    output = output + 
+`
+export const ${quickReactElement.name} = (props) => {
     
-    \n`;
+\n`;
     
     if ( (hooks!==undefined) && (hooks.indexOf('useContext')!=-1) ) {
         output = output + `// If you are using context exported from another parent component\n`;
@@ -1293,7 +1439,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
             output = output + `
             
             // This useReducer hook can call local functions to handle the requested actions if necessary
-            function s${specifiedNameArray[i]}(state, action) {
+            function s${specifiedNameArray[i].lower}(state, action) {
                 switch (action.type) {
                 case 'Case1':
                     return newState;
@@ -1313,7 +1459,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
                 loggedin: false,
             }
             
-            const [sampleState${(i+1)}, dispatch${(i+1)}] = useReducer(${specifiedNameArray[i]}, initialState${(i+1)});
+            const [sampleState${(i+1)}, dispatch${(i+1)}] = useReducer(${specifiedNameArray[i].lower}, initialState${(i+1)});
             
             `;
             }
@@ -1325,14 +1471,14 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
     if ( (hooks!==undefined) && (hooks.indexOf('useState')!=-1) && (useForm!==undefined) && (useForm===true) ) {
 
         output = output + 
-        `    
-        // sample initialFormValues
-        const initialFormValues1 = {
-            first_name: "",
-            last_name: "",
-            email_address: "",
-        }
-        \n`;
+    `    
+    // sample initialFormValues
+    const initialFormValues1 = {
+        first_name: "",
+        last_name: "",
+        email_address: "",
+    }
+    \n`;
     
         specifiedNameArray=[];
         matchIndex=0;
@@ -1351,7 +1497,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
         matchIndex=0;
         while (quickReact._findMultiplier(quickReactElement, 'useState', specifiedNameArray, 'appState', matchIndex)!==0) {
             for (let i=0; i<quickReact._findMultiplier(quickReactElement, 'useState', specifiedNameArray, 'appState', matchIndex); i++) {
-                output = output + ` const [${specifiedNameArray[i]}, set${specifiedNameArray[i].mixed}] = useState({});\n`;
+                output = output + ` const [${specifiedNameArray[i].lower}, set${specifiedNameArray[i].mixed}] = useState({});\n`;
                 output = output + ` \n`;
             }
             matchIndex++;
@@ -1909,7 +2055,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
             matchIndex=0;
             while (quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex)!==0) {
                 for (let i=quickReact._findMultiplier(quickReactElement, 'useReducer', specifiedNameArray, 'SampleDispatchContext', matchIndex); i>0; i--) {
-                    output = output + `    </${specifiedNameArray[i]}.Provider>\n`;
+                    output = output + `    </${specifiedNameArray[i].mixed}.Provider>\n`;
                 }
                 matchIndex++;
             }
@@ -1922,7 +2068,7 @@ function output_component(useBootstrap, quickReact, tree, quickReactElement, nod
             matchIndex=0;
             while (quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex)!==0) { 
                 for (let i=quickReact._findMultiplier(quickReactElement, 'useContext', specifiedNameArray, 'SampleContext', matchIndex); i>0; i--) {
-                    output = output + `    </${specifiedNameArray[i]}.Provider>\n`;
+                    output = output + `    </${specifiedNameArray[i].mixed}.Provider>\n`;
                 }
                 matchIndex++;
             }
